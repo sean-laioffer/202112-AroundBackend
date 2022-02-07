@@ -1,6 +1,7 @@
 package service
 
 import (
+	"mime/multipart"
 	"reflect"
 
 	"around/backend"
@@ -41,4 +42,14 @@ func getPostFromSearchResult(searchResult *elastic.SearchResult) []model.Post {
 		posts = append(posts, p)
 	}
 	return posts
+}
+
+func SavePost(post *model.Post, file multipart.File) error {
+	medialink, err := backend.GCSBackend.SaveToGCS(file, post.Id)
+	if err != nil {
+		return err
+	}
+	post.Url = medialink
+
+	return backend.ESBackend.SaveToES(post, constants.POST_INDEX, post.Id)
 }
