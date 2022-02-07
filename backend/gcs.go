@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"around/constants"
+	"around/util"
 
 	"cloud.google.com/go/storage"
 )
@@ -19,16 +19,16 @@ type GoogleCloudStorageBackend struct {
 	bucket string
 }
 
-func InitGCSBackend() {
-	client, err := storage.NewClient(context.Background())
-	if err != nil {
-		panic(err)
-	}
+func InitGCSBackend(config *util.GCSInfo) {
+    client, err := storage.NewClient(context.Background())
+    if err != nil {
+        panic(err)
+    }
 
-	GCSBackend = &GoogleCloudStorageBackend{
-		client: client,
-		bucket: constants.GCS_BUCKET,
-	}
+    GCSBackend = &GoogleCloudStorageBackend{
+        client: client,
+        bucket: config.Bucket,
+    }
 }
 
 func (backend *GoogleCloudStorageBackend) SaveToGCS(r io.Reader, objectName string) (string, error) {
